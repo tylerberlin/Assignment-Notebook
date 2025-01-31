@@ -15,7 +15,9 @@ class AssignmentList: ObservableObject {
             }
         }
     }
-
+    
+    @Published var selectedSortOption: String = "Course"
+    
     init() {
         if let data = UserDefaults.standard.data(forKey: "data") {
             if let decodedData = try? JSONDecoder().decode([AssignmentItem].self, from: data) {
@@ -25,5 +27,21 @@ class AssignmentList: ObservableObject {
         }
         items = []
     }
- }
+    var sortedAssignments: [AssignmentItem] {
+        if selectedSortOption == "Course" {
+            return items.sorted { $0.course < $1.course }
+        } else {
+            return items.sorted { $0.dueDate < $1.dueDate }
+        }
+    }
+    
+    func changeSortOption(to option: String) {
+        selectedSortOption = option
+    }
+    
+    func addAssignment(course: String, description: String, dueDate: Date) {
+        let item = AssignmentItem(id: UUID(), course: course, description: description, dueDate: dueDate)
+        items.append(item)
+    }
+}
 

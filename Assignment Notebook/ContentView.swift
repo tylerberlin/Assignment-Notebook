@@ -10,25 +10,48 @@ import SwiftUI
 struct ContentView: View {
     @ObservedObject var assignmentList = AssignmentList()
     @State private var showingAddItemView = false
+    
     var body: some View {
         NavigationView {
-            List{
-                ForEach(assignmentList.items) { item in
-                    HStack {
-                        VStack(alignment: .leading, content: {
-                            Text(item.course).font(.headline)
-                            Text(item.description)
-                        })
-                        Spacer()
-                        Text(item.dueDate, style: .date)
+            VStack {
+                HStack {
+                    Button("Sort by Course") {
+                        assignmentList.changeSortOption(to: "Course")
                     }
+                    .padding()
+                    .background(assignmentList.selectedSortOption == "Course" ? Color.black : Color.clear)
+                    .cornerRadius(8)
+                    
+                    Button("Sort by Due Date") {
+                        assignmentList.changeSortOption(to: "Due Date")
+                    }
+                    .padding()
+                    .background(assignmentList.selectedSortOption == "Due Date" ? Color.black : Color.clear)
+                    .cornerRadius(8)
                 }
-                .onMove(perform: { indices, newOffset in
-                    assignmentList.items.move(fromOffsets: indices, toOffset: newOffset)                })
+                .padding()
                 
-                .onDelete(perform: { indexSet in
-                    assignmentList.items.remove(atOffsets: indexSet)
-                })
+                List {
+                    ForEach(assignmentList.sortedAssignments) { item in
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(item.course).font(.headline)
+                                Text(item.description)
+                            }
+                            Spacer()
+                            Text(item.dueDate, style: .date)
+                        }
+                        .padding()
+                        .cornerRadius(8)
+                        .shadow(radius: 5)
+                    }
+                    .onMove(perform: { indices, newOffset in
+                        assignmentList.items.move(fromOffsets: indices, toOffset: newOffset)
+                    })
+                    .onDelete(perform: { indexSet in
+                        assignmentList.items.remove(atOffsets: indexSet)
+                    })
+                }
             }
             .sheet(isPresented: $showingAddItemView, content: {
                 AddAssignmentView(assignmentList: assignmentList)
@@ -41,7 +64,6 @@ struct ContentView: View {
                 Image(systemName: "plus")
             }))
         }
-        
     }
 }
 
