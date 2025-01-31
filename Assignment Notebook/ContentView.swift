@@ -11,6 +11,14 @@ struct ContentView: View {
     @ObservedObject var assignmentList = AssignmentList()
     @State private var showingAddItemView = false
     
+    let courseColors: [String: Color] = [
+            "Civics": .red,
+            "Mobile Apps": .yellow,
+            "Yearbook": .purple,
+            "English": .blue,
+            "Horticulture": .green
+        ]
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -42,6 +50,7 @@ struct ContentView: View {
                             Text(item.dueDate, style: .date)
                         }
                         .padding()
+                        .background(courseColors[item.course] ?? .gray)
                         .cornerRadius(8)
                         .shadow(radius: 5)
                     }
